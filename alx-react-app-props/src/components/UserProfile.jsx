@@ -1,9 +1,10 @@
 import React from 'react'
 import UserContext from './UserContext';
+import React, { useContext } from 'react';
 
 function UserProfile(){
 
-const user = UserContext(UserContext);
+const useContext= useContext(UserContext);
 
   return (
     <div>
