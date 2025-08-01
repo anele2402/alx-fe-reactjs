@@ -11,10 +11,10 @@ function App() {
     
     <div>
       <h1>Lets Share Some Recipes!</h1>
-      <RecipeList/>
-      <AddRecipeForm/>
+      <RecipeList />
+      <AddRecipeForm />
     </div>
   );
 }
 
-export default App
+export default App;
