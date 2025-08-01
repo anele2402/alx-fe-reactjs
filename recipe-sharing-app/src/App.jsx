@@ -7,12 +7,13 @@ function App() {
   
   return (
     <>
-      <div>
-        <AddRecipeForm  />
-      </div>
-      <div>
-        <RecipeList/>
-      </div>
+      <Router>
+      <Routes>
+        <Route path="/" element={<RecipeList />} />
+        <Route path="/recipes/:id" element={<RecipeDetails />} />
+        <Route path="/add" element={<AddRecipeForm />} />
+      </Routes>
+    </Router>
     </>
   )
 }
