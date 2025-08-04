@@ -2,6 +2,8 @@ import { useState } from 'react'
 import './App.css'
 import RecipeList from './components/RecipeList'
 import AddRecipeForm from './components/AddRecipeForm'
+import SearchBar from './components/SearchBar'
+
 
 function App() {
   
@@ -14,6 +16,7 @@ function App() {
         <Route path="/add" element={<AddRecipeForm />} />
       </Routes>
     </Router>
+    <SearchBar/>
     </>
   )
 }
