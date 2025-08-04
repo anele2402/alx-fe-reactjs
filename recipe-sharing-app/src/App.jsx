@@ -18,6 +18,8 @@ function App() {
       </Routes>
     </Router>
     <SearchBar/>
+    <FavoritesList/>
+    <RecommendationsList/>
     </>
   )
 }
