@@ -6,17 +6,23 @@ import './App.css'
 
 
 
-function App() {
+
+  const App = () => {
+  const handleSearch = (username) => {
+    console.log('Searching for:', username);
+  
+  };
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        
-      </Routes>
-      <Search/>
-    </Router>
-    
+    <div>
+       <Home/>
+      
+      <Search onSearch={handleSearch} />
+     
+    </div>
   );
+
+  
 }
 
 export default App;
