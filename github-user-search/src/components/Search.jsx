@@ -1,101 +1,141 @@
-
 import React, { useState } from 'react';
-
-import { fetchUserData } from '../services/githubService';
-
-
-
-const inputStyle = {
-  borderRadius: '5px',
-  padding: '10px 12px',
-  backgroundColor: '#f8d4f0',
-  color: '#000',
-  width: '250px',
-  border: '1px solid #ccc',
-  fontSize: '16px',
-  outline: 'none',
-};
-
-const btnStyle = {
-  marginLeft: '10px',
-  padding: '10px 16px',
-  fontSize: '16px',
-  borderRadius: '5px',
-  backgroundColor: '#6200ea',
-  color: 'white',
-  border: 'none',
-  cursor: 'pointer',
-};
-
-const resultStyle = {
-  marginTop: '20px',
-  padding: '10px',
-  border: '1px solid #ccc',
-  borderRadius: '8px',
-  maxWidth: '400px',
-  backgroundColor: '#f4f4f4',
-};
-
-const avatarStyle = {
-  width: '100px',
-  borderRadius: '50%',
-  marginBottom: '10px',
-};
+import { searchUsers } from '../services/githubService';
 
 const Search = () => {
   const [username, setUsername] = useState('');
-  const [user, setUser] = useState(null);
+  const [location, setLocation] = useState('');
+  const [minRepos, setMinRepos] = useState('');
+  const [users, setUsers] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleChange = (e) => {
-    setUsername(e.target.value);
-  };
+  const [lastSearchParams, setLastSearchParams] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username.trim()) return;
+    setPage(1);
+    setUsers([]);
+    await fetchUsers(1);
+  };
 
+  const fetchUsers = async (pageToFetch) => {
     setLoading(true);
     setError(null);
-    setUser(null);
+
+    const searchParams = {
+      username,
+      location,
+      minRepos,
+      page: pageToFetch,
+    };
 
     try {
-      const data = await fetchUserData(username.trim());
-      setUser(data);
+      const { users: fetchedUsers, totalCount } = await searchUsers(searchParams);
+
+      setUsers((prev) => (pageToFetch === 1 ? fetchedUsers : [...prev, ...fetchedUsers]));
+      setTotalCount(totalCount);
+      setLastSearchParams(searchParams);
+      setPage(pageToFetch);
     } catch (err) {
-      setError('Looks like we cant find the user');
+      setError(err.message || 'Failed to load users');
     } finally {
       setLoading(false);
     }
+  };
 
-    setUsername('');
+  const handleLoadMore = async () => {
+    const nextPage = page + 1;
+    await fetchUsers(nextPage);
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <input
-          style={inputStyle}
-          type="text"
-          value={username}
-          onChange={handleChange}
-          placeholder="Enter GitHub username"
-        />
-        <button style={btnStyle} type="submit">Search</button>
+    <div className="p-4 max-w-xl mx-auto">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-md rounded p-6 flex flex-col gap-4"
+      >
+        <label className="block">
+          <span className="text-gray-700">Username</span>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="e.g., octocat"
+            className="mt-1 block w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-gray-700">Location</span>
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="e.g., Berlin"
+            className="mt-1 block w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-gray-700">Minimum Repositories</span>
+          <input
+            type="number"
+            value={minRepos}
+            onChange={(e) => setMinRepos(e.target.value)}
+            placeholder="e.g., 10"
+            className="mt-1 block w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
+          />
+        </label>
+
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Search
+        </button>
       </form>
 
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {user && (
-        <div style={resultStyle}>
-          <img src={user.avatar_url} alt="avatar" style={avatarStyle} />
-          <h3>{user.name || user.login}</h3>
-          <p>
-            <a href={user.html_url} target="_blank" rel="noopener noreferrer">
-              Visit GitHub Profile
-            </a>
-          </p>
+      {loading && <p className="mt-4 text-blue-500">Loading...</p>}
+      {error && <p className="mt-4 text-red-500">{error}</p>}
+
+      <div className="mt-6 space-y-4">
+        {users.map((user) => (
+          <div
+            key={user.id}
+            className="flex items-center gap-4 p-4 border rounded-lg bg-gray-50"
+          >
+            <img
+              src={user.avatar_url}
+              alt="Avatar"
+              className="w-16 h-16 rounded-full"
+            />
+            <div>
+              <h3 className="text-lg font-semibold">{user.name || user.login}</h3>
+              <p className="text-sm text-gray-600">{user.location || 'Location not available'}</p>
+              <p className="text-sm">Public Repos: {user.public_repos}</p>
+              <a
+                href={user.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 underline"
+              >
+                View Profile
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {!loading && users.length < totalCount && (
+        <div className="text-center mt-6">
+          <button
+            onClick={handleLoadMore}
+            className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900 transition"
+          >
+            Load More
+          </button>
         </div>
       )}
     </div>
