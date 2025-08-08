@@ -2,13 +2,15 @@ import axios from 'axios';
 
 export const searchUsers = async ({ username = '', location = '', minRepos = '', page = 1 }) => {
   try {
+    
     let query = '';
 
     if (username) query += `${username} `;
     if (location) query += `location:${location} `;
     if (minRepos) query += `repos:>${minRepos}`;
 
-    const searchResponse = await axios.get(`https://api.github.com/search/users`, {
+    
+    const searchResponse = await axios.get('https://api.github.com/search/users', {
       params: {
         q: query.trim(),
         per_page: 10,
@@ -31,10 +33,9 @@ export const searchUsers = async ({ username = '', location = '', minRepos = '',
       totalCount: searchResponse.data.total_count,
     };
   } catch (error) {
-    if (error.response && error.response.status === 403) {
+    if (error.response?.status === 403) {
       throw new Error('API rate limit exceeded. Try again later.');
     }
     throw new Error('Failed to search users.');
   }
 };
-
