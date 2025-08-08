@@ -17,10 +17,10 @@ const Search = () => {
     e.preventDefault();
     setPage(1);
     setUsers([]);
-    await fetchUsers(1);
+    await fetchUserData(1);
   };
 
-  const fetchUsers = async (pageToFetch) => {
+  const fetchUserData = async (pageToFetch) => {
     setLoading(true);
     setError(null);
 
