@@ -15,6 +15,7 @@ const FormikForm = () => (
     onSubmit={(values) => {
       console.log(values);
     }}
+
   >
     {() => (
       <Form style={{ display: 'flex', flexDirection: 'column', maxWidth: '300px', gap: '10px' }}>
