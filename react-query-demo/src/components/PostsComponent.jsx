@@ -1,4 +1,4 @@
-
+// src/components/PostsComponent.jsx
 import React from 'react';
 import { useQuery } from 'react-query';
 import axios from 'axios';
@@ -17,7 +17,10 @@ const PostsComponent = () => {
     refetch,
     isFetching,
   } = useQuery('posts', fetchPosts, {
-    staleTime: 1000 * 60 * 5, 
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10, 
+    refetchOnWindowFocus: false, 
+    keepPreviousData: true, 
   });
 
   if (isLoading) return <p>Loading posts...</p>;
