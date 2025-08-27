@@ -1,7 +1,7 @@
 import React from 'react'
 import './App.css'
 import RegistrationForm from './components/RegistrationForm'
-import formikForm from './components/formikForm'
+import formikForm from './components/FormikForm'
 
 function App() {
   
@@ -12,7 +12,7 @@ function App() {
         <RegistrationForm/>
       </div>
       <div>
-        <FormikForm/>
+        <formikForm/>
       </div>
       
     </>
